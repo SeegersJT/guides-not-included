@@ -1,5 +1,4 @@
 import { Timestamp } from 'firebase/firestore'
-import type { StockAvailabilityItem } from './Utils.type'
 
 export class Utils {
 	static convertTimestamps<T extends Record<string, unknown>>(obj: T): T {
@@ -25,21 +24,5 @@ export class Utils {
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 2,
 		}).format(amount)
-	}
-
-	static calculateStockAvailability(quantity: number | null | undefined): StockAvailabilityItem {
-		if (!quantity) {
-			return { label: 'Information Unavailable', icon: 'none', variant: 'destructive' }
-		}
-
-		if (quantity <= 0) {
-			return { label: 'No Stock', icon: 'none', variant: 'destructive' }
-		}
-
-		if (quantity < 10) {
-			return { label: `Only ${quantity} left`, icon: 'warning', variant: 'warning' }
-		}
-
-		return { label: 'In Stock', icon: 'check', variant: 'success' }
 	}
 }

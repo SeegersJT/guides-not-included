@@ -1,6 +1,3 @@
-// src/firebase/authService.ts
-// All Firebase Auth operations live here — keeps firebase calls out of sagas/components
-
 import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,

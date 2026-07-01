@@ -1,7 +1,3 @@
-// src/firebase/config.ts
-// Firebase is initialized using environment variables from .env.local
-// All VITE_ prefixed variables are exposed to the client by Vite
-
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, Firestore } from 'firebase/firestore'

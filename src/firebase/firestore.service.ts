@@ -1,6 +1,3 @@
-// src/firebase/firestoreService.ts
-// Generic Firestore CRUD helpers
-
 import {
 	collection,
 	doc,
