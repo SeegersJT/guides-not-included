@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import MASCOT_ICON from '@/assets/mascot.png'
 import Link from '@/components/link/Link.component'
 

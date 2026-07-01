@@ -3,6 +3,7 @@ import DashboardContainer from '@/containers/dashboard/Dashboard.container'
 import ScrollToTop from '@/components/scroll-to-top/ScrollToTop.component'
 import NotFoundContainer from '@/containers/not-found/NotFound.container'
 import HomeContainer from '@/containers/dashboard/home/Home.container'
+import GuidesContainer from '@/containers/dashboard/guides/Guides.container'
 
 export const AppRouter = () => (
 	<BrowserRouter>
@@ -10,10 +11,16 @@ export const AppRouter = () => (
 			<Route path={'/'} element={<DashboardContainer />}>
 				<Route index element={<HomeContainer />} />
 
-				{/* <Route path={'/guides'} element={<GuidesContainer />} /> */}
+				<Route path={'/guides'} element={<GuidesContainer />} />
 				{/* <Route path={'/guides/:id'} element={<GuideContainer />} /> */}
-				{/* <Route path={'/profile'} element={<AccountContainer />} /> */}
-				{/* <Route path={'/authenticate'} element={<AuthenticateContainer />} /> */}
+
+				<Route index element={<CategoryContainer />} />
+
+				{/* <Route path={'/admin'} element={<AdminContainer />}>
+					<Route index element={<AuthenticationContainer />} />
+
+					<Route index element={<ProfileContainer />} />
+				</Route> */}
 			</Route>
 
 			<Route path="*" element={<NotFoundContainer />} />

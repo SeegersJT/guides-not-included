@@ -1,19 +1,27 @@
+export type GuideSort = 'recent' | 'liked'
+
 export interface GuideItem {
 	id: string
-	author_id: string
-	author_username: string
 	title: string
-	summary: string
-	category_id: string
-	category_name: string
-	sub_category_id: string
-	sub_category_name: string
+	description: string
 	content: string
-	cover_image_url: string
-	created_at: Date
-	updated_at: Date
+	authorId: string
+	authorName: string
+	coverImageUrl?: string
+	subcategoryId: string
+	subcategoryName: string
+	subcategoryColor: string
+	likeCount: number
+	createdAt: Date
+	updatedAt: Date
+}
+
+export interface GuideQuery {
+	subcategoryId: string | null
+	sort: GuideSort
 }
 
 export interface GuideState {
 	guideData: GuideItem[]
+	guideDataLoading: boolean
 }

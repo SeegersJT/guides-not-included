@@ -1,7 +1,5 @@
-import { ImageOff } from 'lucide-react'
-import Link from '../link/Link.component'
+import { Heart } from 'lucide-react'
 import type { GuideItem } from '@/redux/types/Guide.type'
-import CategoryBadge from '../category-badge/CategoryBadge.component'
 
 interface GuideCardProps {
 	guide: GuideItem
@@ -9,43 +7,43 @@ interface GuideCardProps {
 
 function GuideCard({ guide }: GuideCardProps) {
 	return (
-		<Link to={`/guides/${guide.id}`} type="card" variant="default">
-			<div className="relative aspect-[16/9] overflow-hidden bg-secondary/50">
-				{guide.cover_image_url ? (
+		<div className="group overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40">
+			<div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+				{guide.coverImageUrl && (
 					<img
-						src={guide.cover_image_url}
-						alt={guide.title}
-						loading="lazy"
-						className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+						src={guide.coverImageUrl}
+						alt=""
+						className="size-full object-cover transition-transform group-hover:scale-105"
 					/>
-				) : (
-					<div className="flex size-full items-center justify-center text-muted-foreground/40">
-						<ImageOff className="size-8" />
-					</div>
 				)}
-				<div className="absolute left-3 top-3">
-					<CategoryBadge subCategoryId={guide.sub_category_id} />
-				</div>
+				<span
+					className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-medium"
+					style={{
+						color: guide.subcategoryColor,
+						backgroundColor: `color-mix(in oklab, ${guide.subcategoryColor} 20%, black)`,
+					}}
+				>
+					{guide.subcategoryName}
+				</span>
 			</div>
 
-			<div className="flex flex-1 flex-col gap-2 p-4">
-				<h3 className="font-display text-lg font-semibold leading-tight text-foreground line-clamp-2 group-hover:text-primary">
-					{guide.title}
-				</h3>
-				{guide.summary && (
-					<p className="text-sm text-muted-foreground line-clamp-2">{guide.summary}</p>
-				)}
-				<div className="mt-auto flex items-center justify-between pt-2">
-					<span className="truncate text-xs text-muted-foreground">
-						by{' '}
-						<span className="font-medium text-foreground/80">
-							{guide.author_username ?? 'Unknown'}
-						</span>
+			<div className="p-4">
+				<h3 className="font-display text-base font-bold leading-tight">{guide.title}</h3>
+				<p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+					{guide.description}
+				</p>
+
+				<div className="mt-4 flex items-center justify-between">
+					<span className="text-sm text-muted-foreground">
+						by <span className="font-medium text-foreground">{guide.authorName}</span>
 					</span>
-					{/* <LikeButton guideId={guide.id} initialCount={guide.likes_count} /> */}
+					<span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-destructive">
+						<Heart className="size-3.5 fill-current" />
+						{guide.likeCount}
+					</span>
 				</div>
 			</div>
-		</Link>
+		</div>
 	)
 }
 
