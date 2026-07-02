@@ -17,8 +17,15 @@ function Footer() {
 					</span>
 				</div>
 				<p className="text-center text-xs text-muted-foreground">
-					A fan-made community guide hub for Oxygen Not Included. Not affiliated with Klei
-					Entertainment.
+					A fan-made community guide hub for{' '}
+					<a
+						href="https://www.klei.com/"
+						target="_blank"
+						className="text-primary hover:underline"
+					>
+						Oxygen Not Included
+					</a>
+					. Not affiliated with Klei Entertainment.
 				</p>
 				<nav className="flex items-center gap-4 text-xs text-muted-foreground">
 					<p>Created by PKSolo103 & HappyFeet @ 2026</p>

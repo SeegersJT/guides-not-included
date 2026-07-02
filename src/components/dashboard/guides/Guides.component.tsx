@@ -19,12 +19,14 @@ interface GuidesProps {
 	sort: GuideSort
 	subcategoryId: string | null
 	activeSubcategory: SubCategoryItem | null
+	activeCategoryColor: string | null
 	mobileFilterOpen: boolean
 	isLoading: boolean
 	onSearchChange: (value: string) => void
 	onSortChange: (sort: GuideSort) => void
 	onSelectSubcategory: (subcategoryId: string | null) => void
 	onMobileFilterOpenChange: (open: boolean) => void
+	subcategoryMeta: Map<string, { name: string; color: string }>
 }
 
 function Guides({
@@ -33,12 +35,14 @@ function Guides({
 	sort,
 	subcategoryId,
 	activeSubcategory,
+	activeCategoryColor,
 	mobileFilterOpen,
 	isLoading,
 	onSearchChange,
 	onSortChange,
 	onSelectSubcategory,
 	onMobileFilterOpenChange,
+	subcategoryMeta,
 }: GuidesProps) {
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-10">
@@ -119,9 +123,9 @@ function Guides({
 								onClick={() => onSelectSubcategory(null)}
 								className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium"
 								style={{
-									color: activeSubcategory.color,
-									borderColor: `color-mix(in oklab, ${activeSubcategory.color} 45%, transparent)`,
-									backgroundColor: `color-mix(in oklab, ${activeSubcategory.color} 10%, transparent)`,
+									color: activeCategoryColor ?? undefined,
+									borderColor: `color-mix(in oklab, ${activeCategoryColor} 45%, transparent)`,
+									backgroundColor: `color-mix(in oklab, ${activeCategoryColor} 10%, transparent)`,
 								}}
 							>
 								{activeSubcategory.name}
@@ -141,9 +145,19 @@ function Guides({
 						</div>
 					) : guides.length > 0 ? (
 						<div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-							{guides.map(g => (
-								<GuideCard key={g.id} guide={g} />
-							))}
+							{guides.map(guide => {
+								const meta = guide.subcategoryId
+									? subcategoryMeta.get(guide.subcategoryId)
+									: undefined
+								return (
+									<GuideCard
+										key={guide.id}
+										guide={guide}
+										subcategoryName={meta?.name}
+										subcategoryColor={meta?.color}
+									/>
+								)
+							})}
 						</div>
 					) : (
 						<div className="rounded-xl border border-dashed border-border bg-card/40 p-16 text-center">

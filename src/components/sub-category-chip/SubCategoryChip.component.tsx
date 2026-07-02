@@ -1,23 +1,44 @@
 import { useState } from 'react'
-import { Tag, Pencil, X, Check } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { Input } from '../ui/input'
+import { Check, Pencil, Tag, X } from 'lucide-react'
 
-interface SubcategoryChipProps {
+interface SubCategoryChipProps {
 	name: string
 	color: string
 	onRename: (name: string) => void
 	onDelete: () => void
 }
 
-function SubcategoryChip({ name, color, onRename, onDelete }: SubcategoryChipProps) {
+function SubcategoryChip({ name, color, onRename, onDelete }: SubCategoryChipProps) {
 	const [editing, setEditing] = useState(false)
 	const [draft, setDraft] = useState(name)
 
 	const save = () => {
 		const clean = draft.trim()
-		if (clean) onRename(clean)
-		else setDraft(name)
+
+		if (clean) {
+			onRename(clean)
+		} else {
+			setDraft(name)
+		}
+
 		setEditing(false)
+	}
+
+	const handleOnKeyDown = (key: string) => {
+		if (key === 'Enter') {
+			save()
+		}
+
+		if (key === 'Escape') {
+			setDraft(name)
+			setEditing(false)
+		}
+	}
+
+	const handleOnEditClick = () => {
+		setDraft(name)
+		setEditing(true)
 	}
 
 	if (editing) {
@@ -26,14 +47,8 @@ function SubcategoryChip({ name, color, onRename, onDelete }: SubcategoryChipPro
 				<Input
 					autoFocus
 					value={draft}
-					onChange={e => setDraft(e.target.value)}
-					onKeyDown={e => {
-						if (e.key === 'Enter') save()
-						if (e.key === 'Escape') {
-							setDraft(name)
-							setEditing(false)
-						}
-					}}
+					onChange={event => setDraft(event.target.value)}
+					onKeyDown={event => handleOnKeyDown(event.key)}
 					className="h-6 w-32 border-0 bg-transparent px-1 text-sm focus-visible:ring-0"
 				/>
 				<button onClick={save} className="rounded-full p-1 hover:bg-background">
@@ -48,10 +63,7 @@ function SubcategoryChip({ name, color, onRename, onDelete }: SubcategoryChipPro
 			<Tag className="size-3" style={{ color }} />
 			{name}
 			<button
-				onClick={() => {
-					setDraft(name)
-					setEditing(true)
-				}}
+				onClick={handleOnEditClick}
 				className="rounded-full p-0.5 text-muted-foreground hover:text-foreground"
 				aria-label="Rename subcategory"
 			>

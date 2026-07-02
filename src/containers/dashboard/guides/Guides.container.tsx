@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import type { RootState } from '@/redux/types/Root.type'
-import { requestGuideData } from '@/redux/actions/Guide.action'
+import { requestGuideList } from '@/redux/actions/Guide.action'
 import type { GuideSort } from '@/redux/types/Guide.type'
 import Guides from '@/components/dashboard/guides/Guides.component'
 import { useAppSelector } from '@/hooks/useAppSelector'
@@ -9,7 +9,7 @@ import { useAppSelector } from '@/hooks/useAppSelector'
 function GuidesContainer() {
 	const dispatch = useDispatch()
 
-	const { guideData, guideDataLoading } = useAppSelector((state: RootState) => state.guide)
+	const { guideList, guideListLoading } = useAppSelector((state: RootState) => state.guide)
 	const { categoryData } = useAppSelector((state: RootState) => state.system.category)
 
 	const [search, setSearch] = useState('')
@@ -18,34 +18,52 @@ function GuidesContainer() {
 	const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
 
 	useEffect(() => {
-		dispatch(requestGuideData({ subcategoryId, sort }))
-	}, [dispatch, subcategoryId, sort])
+		dispatch(
+			requestGuideList({ subcategoryId: subcategoryId ?? undefined, status: 'published' })
+		)
+	}, [dispatch, subcategoryId])
 
-	const activeSubcategory = useMemo(() => {
-		if (!subcategoryId) return null
+	const { activeSubcategory, activeCategoryColor } = useMemo(() => {
+		if (!subcategoryId) return { activeSubcategory: null, activeCategoryColor: null }
 
 		for (const category of categoryData) {
 			const match = category.subcategories.find(
-				subcategories => subcategories.id === subcategoryId
+				subcategory => subcategory.id === subcategoryId
 			)
 
-			if (match) return match
+			if (match) return { activeSubcategory: match, activeCategoryColor: category.color }
 		}
 
-		return null
+		return { activeSubcategory: null, activeCategoryColor: null }
 	}, [categoryData, subcategoryId])
 
 	const filteredGuides = useMemo(() => {
 		const term = search.trim().toLowerCase()
 
-		if (!term) return guideData
+		const filtered = term
+			? guideList.filter(
+					guide =>
+						guide.title.toLowerCase().includes(term) ||
+						guide.summary.toLowerCase().includes(term)
+				)
+			: guideList
 
-		return guideData.filter(
-			guide =>
-				guide.title.toLowerCase().includes(term) ||
-				guide.description.toLowerCase().includes(term)
-		)
-	}, [guideData, search])
+		if (sort === 'liked') {
+			return [...filtered].sort((a, b) => b.likeCount - a.likeCount)
+		}
+
+		return filtered
+	}, [guideList, search, sort])
+
+	const subcategoryMeta = useMemo(() => {
+		const map = new Map<string, { name: string; color: string }>()
+		for (const category of categoryData) {
+			for (const sub of category.subcategories) {
+				map.set(sub.id, { name: sub.name, color: category.color })
+			}
+		}
+		return map
+	}, [categoryData])
 
 	return (
 		<Guides
@@ -56,10 +74,12 @@ function GuidesContainer() {
 			subcategoryId={subcategoryId}
 			onSelectSubcategory={setSubcategoryId}
 			activeSubcategory={activeSubcategory}
+			activeCategoryColor={activeCategoryColor}
 			mobileFilterOpen={mobileFilterOpen}
 			onMobileFilterOpenChange={setMobileFilterOpen}
-			isLoading={guideDataLoading}
+			isLoading={guideListLoading}
 			guides={filteredGuides}
+			subcategoryMeta={subcategoryMeta}
 		/>
 	)
 }

@@ -1,13 +1,18 @@
 import type React from 'react'
 import Link from '../link/Link.component'
+import GuideCard from '@/components/guide-card/GuideCard.component'
+import type { GuideItem } from '@/redux/types/Guide.type'
 
 interface GuideRowProps {
 	title: string
 	icon: React.ReactNode
 	emptyText?: string
+	guides: GuideItem[]
+	isLoading: boolean
+	subcategoryMeta: Map<string, { name: string; color: string }>
 }
 
-function GuideRow({ title, icon, emptyText }: GuideRowProps) {
+function GuideRow({ title, icon, emptyText, guides, isLoading, subcategoryMeta }: GuideRowProps) {
 	return (
 		<section className="mx-auto max-w-6xl px-4 py-10">
 			<div className="mb-5 flex items-center justify-between">
@@ -16,13 +21,13 @@ function GuideRow({ title, icon, emptyText }: GuideRowProps) {
 				</h2>
 				<Link
 					to="/guides"
-					variant="none"
+					variant="outline"
 					className="text-sm font-medium text-primary hover:underline"
 				>
 					View all
 				</Link>
 			</div>
-			{/* {query.isLoading ? (
+			{isLoading ? (
 				<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 					{Array.from({ length: 3 }).map((_, i) => (
 						<div
@@ -31,21 +36,27 @@ function GuideRow({ title, icon, emptyText }: GuideRowProps) {
 						/>
 					))}
 				</div>
-			) : query.data && query.data.length > 0 ? (
+			) : guides.length > 0 ? (
 				<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-					{query.data.map(guide => (
-						<GuideCard key={guide.id} guide={guide} />
-					))}
+					{guides.map(guide => {
+						const meta = guide.subcategoryId
+							? subcategoryMeta.get(guide.subcategoryId)
+							: undefined
+						return (
+							<GuideCard
+								key={guide.id}
+								guide={guide}
+								subcategoryName={meta?.name}
+								subcategoryColor={meta?.color}
+							/>
+						)
+					})}
 				</div>
 			) : (
 				<p className="rounded-xl border border-dashed border-border bg-card/40 p-10 text-center text-muted-foreground">
 					{emptyText ?? 'Nothing here yet.'}
 				</p>
-			)} */}
-
-			<p className="rounded-xl border border-dashed border-border bg-card/40 p-10 text-center text-muted-foreground">
-				{emptyText ?? 'Nothing here yet.'}
-			</p>
+			)}
 		</section>
 	)
 }

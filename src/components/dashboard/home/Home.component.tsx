@@ -2,9 +2,24 @@ import HeroImage from '@/assets/hero-colony.png'
 import GuideRow from '@/components/guide-row/GuideRow.component'
 import Link from '@/components/link/Link.component'
 import { HomeFeatureStrip } from '@/containers/dashboard/home/Home.helper'
+import type { GuideItem } from '@/redux/types/Guide.type'
 import { ArrowRight, Flame, Sparkles } from 'lucide-react'
 
-function Home() {
+interface HomeProps {
+	mostLikedGuides: GuideItem[]
+	mostLikedLoading: boolean
+	recentGuides: GuideItem[]
+	recentLoading: boolean
+	subcategoryMeta: Map<string, { name: string; color: string }>
+}
+
+function Home({
+	mostLikedGuides,
+	mostLikedLoading,
+	recentGuides,
+	recentLoading,
+	subcategoryMeta,
+}: HomeProps) {
 	return (
 		<div>
 			<section className="relative overflow-hidden border-b border-border">
@@ -61,11 +76,17 @@ function Home() {
 				title="Most liked"
 				icon={<Flame className="size-5 text-accent" />}
 				emptyText="No guides yet - be the first to publish one!"
+				guides={mostLikedGuides}
+				isLoading={mostLikedLoading}
+				subcategoryMeta={subcategoryMeta}
 			/>
 			<GuideRow
 				title="Freshly dug"
 				icon={<Sparkles className="size-5 text-primary" />}
 				emptyText="No guides yet - be the first to publish one!"
+				guides={recentGuides}
+				isLoading={recentLoading}
+				subcategoryMeta={subcategoryMeta}
 			/>
 		</div>
 	)

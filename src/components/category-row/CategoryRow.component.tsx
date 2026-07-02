@@ -1,8 +1,9 @@
+import type { CategoryItem } from '@/redux/types/Category.type'
 import { useState } from 'react'
-import { Pencil, Trash2, Check, X, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '../ui/card'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -13,19 +14,13 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import type { CategoryItem } from '@/redux/types/Category.type'
-import ColorSwatches from '../color-swatches/ColorSwatches.component'
+} from '../ui/alert-dialog'
 import SubcategoryChip from '../sub-category-chip/SubCategoryChip.component'
-
-interface ColorChoice {
-	label: string
-	value: string
-}
+import ColorSwatch from '../color-swatch/ColorSwatch.component'
 
 interface CategoryRowProps {
 	category: CategoryItem
-	colorChoices: ColorChoice[]
+	categoryMutationLoading: boolean
 	onRename: (name: string) => void
 	onRecolor: (color: string) => void
 	onDelete: () => void
@@ -36,7 +31,7 @@ interface CategoryRowProps {
 
 function CategoryRow({
 	category,
-	colorChoices,
+	categoryMutationLoading,
 	onRename,
 	onRecolor,
 	onDelete,
@@ -114,6 +109,7 @@ function CategoryRow({
 									size="icon"
 									variant="ghost"
 									className="size-8"
+									disabled={categoryMutationLoading}
 									onClick={() => {
 										setDraft(category.name)
 										setEditing(true)
@@ -127,6 +123,7 @@ function CategoryRow({
 											size="icon"
 											variant="ghost"
 											className="size-8 text-destructive hover:text-destructive"
+											disabled={categoryMutationLoading}
 										>
 											<Trash2 className="size-4" />
 										</Button>
@@ -154,13 +151,10 @@ function CategoryRow({
 						</>
 					)}
 				</div>
+
 				{editing && (
 					<div className="pt-2">
-						<ColorSwatches
-							choices={colorChoices}
-							value={category.color}
-							onChange={onRecolor}
-						/>
+						<ColorSwatch value={category.color} onChange={onRecolor} />
 					</div>
 				)}
 			</CardHeader>
@@ -169,13 +163,13 @@ function CategoryRow({
 					{category.subcategories.length === 0 ? (
 						<p className="text-sm text-muted-foreground">No subcategories yet.</p>
 					) : (
-						category.subcategories.map(sub => (
+						category.subcategories.map(subcategory => (
 							<SubcategoryChip
-								key={sub.id}
-								name={sub.name}
+								key={subcategory.id}
+								name={subcategory.name}
 								color={category.color}
-								onRename={name => onRenameSub(sub.id, name)}
-								onDelete={() => onDeleteSub(sub.id)}
+								onRename={name => onRenameSub(subcategory.id, name)}
+								onDelete={() => onDeleteSub(subcategory.id)}
 							/>
 						))
 					)}
@@ -192,7 +186,7 @@ function CategoryRow({
 						size="sm"
 						variant="secondary"
 						onClick={handleAddSub}
-						disabled={!newSub.trim()}
+						disabled={!newSub.trim() || categoryMutationLoading}
 					>
 						<Plus className="size-4" /> Add
 					</Button>

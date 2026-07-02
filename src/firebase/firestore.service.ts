@@ -16,6 +16,8 @@ import {
 	arrayUnion,
 	arrayRemove,
 	runTransaction,
+	limit,
+	increment,
 } from 'firebase/firestore'
 import { db } from './config'
 import { Utils } from '@/utils/Utils'
@@ -63,9 +65,6 @@ export const firestoreService = {
 	remove: async (collectionName: string, id: string): Promise<void> => {
 		await deleteDoc(doc(db, collectionName, id))
 	},
-
-	where,
-	orderBy,
 
 	addToArray: async (
 		collectionName: string,
@@ -125,4 +124,40 @@ export const firestoreService = {
 			transaction.update(ref, { [field]: updatedArray, updatedAt: serverTimestamp() })
 		})
 	},
+
+	toggleLike: async (
+		guideId: string,
+		userId: string
+	): Promise<{ liked: boolean; likeCount: number }> => {
+		const guideRef = doc(db, 'guides', guideId)
+		const likeRef = doc(db, 'guides', guideId, 'likes', userId)
+
+		return runTransaction(db, async tx => {
+			const [guideSnap, likeSnap] = await Promise.all([tx.get(guideRef), tx.get(likeRef)])
+
+			if (!guideSnap.exists()) throw new Error('Guide not found')
+
+			const alreadyLiked = likeSnap.exists()
+
+			if (alreadyLiked) {
+				tx.delete(likeRef)
+				tx.update(guideRef, { likeCount: increment(-1) })
+			} else {
+				tx.set(likeRef, { createdAt: serverTimestamp() })
+				tx.update(guideRef, { likeCount: increment(1) })
+			}
+
+			const nextCount = (guideSnap.data().likeCount ?? 0) + (alreadyLiked ? -1 : 1)
+			return { liked: !alreadyLiked, likeCount: Math.max(0, nextCount) }
+		})
+	},
+
+	getLikeStatus: async (guideId: string, userId: string): Promise<boolean> => {
+		const snap = await getDoc(doc(db, 'guides', guideId, 'likes', userId))
+		return snap.exists()
+	},
+
+	where,
+	orderBy,
+	limit,
 }

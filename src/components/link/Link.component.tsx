@@ -1,7 +1,7 @@
 import { Link as RouterLink, type LinkProps as RouterLinkProps } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
-type LinkType = 'text' | 'button' | 'nav' | 'card'
+type LinkType = 'text' | 'button' | 'nav' | 'card' | 'logo'
 type LinkVariant = 'default' | 'outline' | 'ghost' | 'secondary' | 'destructive'
 
 interface LinkProps extends Omit<RouterLinkProps, 'to'> {
@@ -16,6 +16,7 @@ const BASE_STYLES: Record<LinkType, string> = {
 	button: 'inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors',
 	nav: 'rounded-md px-3 py-2 text-sm font-medium transition-colors',
 	card: 'group flex flex-col overflow-hidden rounded-xl border transition-all',
+	logo: 'flex items-center gap-2.5 hover:cursor-pointer',
 }
 
 const VARIANT_STYLES: Record<LinkType, Partial<Record<LinkVariant, string>>> = {
@@ -39,6 +40,9 @@ const VARIANT_STYLES: Record<LinkType, Partial<Record<LinkVariant, string>>> = {
 		default:
 			'border-border bg-card hover:border-primary/50 hover:shadow-[var(--shadow-glow-teal)]',
 		ghost: 'border-transparent bg-transparent hover:bg-secondary/30',
+	},
+	logo: {
+		ghost: 'text-foreground hover:bg-secondary/50',
 	},
 }
 

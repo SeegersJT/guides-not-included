@@ -4,7 +4,6 @@ export type SubCategoryInput = Omit<SubCategoryItem, 'id'>
 export interface SubCategoryItem {
 	id: string
 	name: string
-	icon: string
 	order: number
 }
 

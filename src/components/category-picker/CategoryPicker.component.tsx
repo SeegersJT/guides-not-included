@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { cn } from '@/lib/utils'
 import { LayoutGrid, Search } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import type { RootState } from '@/redux/types/Root.type'
 import { requestCategoryData } from '@/redux/actions/Category.action'
+import { useAppSelector } from '@/hooks/useAppSelector'
 
 interface CategoryPickerProps {
 	activeSubcategoryId: string | null
@@ -14,12 +15,13 @@ interface CategoryPickerProps {
 
 function CategoryPicker({ activeSubcategoryId, onSelectSubcategory }: CategoryPickerProps) {
 	const dispatch = useDispatch()
-	const { categoryData, categoryDataLoading } = useSelector(
+
+	const { categoryData, categoryDataLoading } = useAppSelector(
 		(state: RootState) => state.system.category
 	)
 
 	const [filter, setFilter] = useState('')
-	const [openValues, setOpenValues] = useState<string[]>([])
+	const [openValue, setOpenValue] = useState<string>('')
 
 	useEffect(() => {
 		if (categoryData.length === 0 && !categoryDataLoading) {
@@ -27,13 +29,31 @@ function CategoryPicker({ activeSubcategoryId, onSelectSubcategory }: CategoryPi
 		}
 	}, [categoryData.length, categoryDataLoading, dispatch])
 
+	// Default: first category open once data arrives (only if nothing open yet)
 	useEffect(() => {
-		if (categoryData.length > 0) setOpenValues(categoryData.map(c => c.id))
-	}, [categoryData])
+		if (categoryData.length > 0 && !openValue) {
+			setOpenValue(categoryData[0].id)
+		}
+	}, [categoryData, openValue])
+
+	// When the active subcategory changes (e.g. selected from elsewhere, or
+	// cleared), make sure its parent group is the one that's open.
+	useEffect(() => {
+		if (!activeSubcategoryId) return
+
+		const parent = categoryData.find(category =>
+			category.subcategories.some(sub => sub.id === activeSubcategoryId)
+		)
+
+		if (parent) setOpenValue(parent.id)
+	}, [activeSubcategoryId, categoryData])
 
 	const groups = useMemo(() => {
 		const term = filter.trim().toLowerCase()
-		if (!term) return [...categoryData].sort((a, b) => Number(a.order) - Number(b.order))
+
+		if (!term) {
+			return [...categoryData].sort((a, b) => Number(a.order) - Number(b.order))
+		}
 
 		return categoryData
 			.map(category => {
@@ -41,19 +61,23 @@ function CategoryPicker({ activeSubcategoryId, onSelectSubcategory }: CategoryPi
 				const matchingSubs = category.subcategories.filter(sub =>
 					sub.name.toLowerCase().includes(term)
 				)
+
 				if (!groupMatches && matchingSubs.length === 0) return null
+
 				return {
 					...category,
 					subcategories: groupMatches ? category.subcategories : matchingSubs,
 				}
 			})
-			.filter((c): c is (typeof categoryData)[number] => c !== null)
+			.filter((category): category is (typeof categoryData)[number] => category !== null)
 			.sort((a, b) => Number(a.order) - Number(b.order))
 	}, [categoryData, filter])
 
-	// auto-expand matches while actively filtering
+	// While actively filtering, open the first matching group so results
+	// are visible without a click. Restore normal single-select behavior
+	// once the filter is cleared (handled by the effects above).
 	useEffect(() => {
-		if (filter.trim()) setOpenValues(groups.map(g => g.id))
+		if (filter.trim() && groups.length > 0) setOpenValue(groups[0].id)
 	}, [filter, groups])
 
 	return (
@@ -87,9 +111,10 @@ function CategoryPicker({ activeSubcategoryId, onSelectSubcategory }: CategoryPi
 				<p className="px-1 py-2 text-sm text-muted-foreground">No categories match.</p>
 			) : (
 				<Accordion
-					type="multiple"
-					value={openValues}
-					onValueChange={setOpenValues}
+					type="single"
+					collapsible
+					value={openValue}
+					onValueChange={setOpenValue}
 					className="w-full"
 				>
 					{groups.map(group => (
@@ -114,14 +139,14 @@ function CategoryPicker({ activeSubcategoryId, onSelectSubcategory }: CategoryPi
 												style={
 													isActive
 														? {
-																backgroundColor: `color-mix(in oklab, ${sub.color} 16%, transparent)`,
+																backgroundColor: `color-mix(in oklab, ${group.color} 16%, transparent)`,
 															}
 														: undefined
 												}
 											>
 												<span
 													className="size-2.5 shrink-0 rounded-full"
-													style={{ backgroundColor: sub.color }}
+													style={{ backgroundColor: group.color }}
 												/>
 												{sub.name}
 											</button>
