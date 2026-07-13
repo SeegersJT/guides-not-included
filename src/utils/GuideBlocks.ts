@@ -1,5 +1,5 @@
 import type { GuideBlock, GuideBlockType } from '@/redux/types/Guide.type'
-import { base64Size } from './image'
+import { base64Size } from './Image'
 
 export const newId = () => crypto.randomUUID()
 
@@ -32,7 +32,7 @@ export const getYoutubeId = (url: string): string | null => {
 	return match ? match[1] : null
 }
 
-export const MAX_TOTAL_IMAGE_BYTES = 700_000
+export const MAX_TOTAL_IMAGE_BYTES = 3_000_000
 
 export const totalImagePayloadSize = (blocks: GuideBlock[], coverImage: string | null): number => {
 	const blockBytes = blocks

@@ -98,9 +98,9 @@ export const updateGuide = (id: string, changes: Partial<GuideItem>) => ({
 	payload: { id, changes },
 })
 
-export const requestDeleteGuide = (id: string) => ({
+export const requestDeleteGuide = (id: string, onSuccess?: () => void) => ({
 	type: GUIDE_ACTIONS.REQUEST_DELETE_GUIDE,
-	payload: { id },
+	payload: { id, onSuccess },
 })
 
 export const deleteGuide = (id: string) => ({

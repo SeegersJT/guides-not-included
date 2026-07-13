@@ -18,9 +18,11 @@ import {
 	runTransaction,
 	limit,
 	increment,
+	writeBatch,
 } from 'firebase/firestore'
 import { db } from './config'
 import { Utils } from '@/utils/Utils'
+import type { CommentInput } from '@/redux/types/Comment.type'
 
 export const firestoreService = {
 	getById: async <T>(collectionName: string, id: string): Promise<T | null> => {
@@ -157,7 +159,75 @@ export const firestoreService = {
 		return snap.exists()
 	},
 
+	addComment: async (guideId: string, data: Omit<CommentInput, 'guideId'>): Promise<string> => {
+		const guideRef = doc(db, 'guides', guideId)
+		const commentRef = doc(collection(db, 'guides', guideId, 'comments'))
+
+		const batch = writeBatch(db)
+		batch.set(commentRef, {
+			...data,
+			guideId,
+			likeCount: 0,
+			createdAt: serverTimestamp(),
+			updatedAt: serverTimestamp(),
+		})
+		batch.update(guideRef, { commentCount: increment(1) })
+		await batch.commit()
+
+		return commentRef.id
+	},
+
+	removeComment: async (guideId: string, commentId: string): Promise<void> => {
+		const guideRef = doc(db, 'guides', guideId)
+		const commentRef = doc(db, 'guides', guideId, 'comments', commentId)
+
+		const batch = writeBatch(db)
+		batch.delete(commentRef)
+		batch.update(guideRef, { commentCount: increment(-1) })
+		await batch.commit()
+	},
+
+	toggleCommentLike: async (
+		guideId: string,
+		commentId: string,
+		userId: string
+	): Promise<{ liked: boolean; likeCount: number }> => {
+		const commentRef = doc(db, 'guides', guideId, 'comments', commentId)
+		const likeRef = doc(db, 'guides', guideId, 'comments', commentId, 'commentLikes', userId)
+
+		return runTransaction(db, async tx => {
+			const [commentSnap, likeSnap] = await Promise.all([tx.get(commentRef), tx.get(likeRef)])
+
+			if (!commentSnap.exists()) throw new Error('Comment not found')
+
+			const alreadyLiked = likeSnap.exists()
+
+			if (alreadyLiked) {
+				tx.delete(likeRef)
+				tx.update(commentRef, { likeCount: increment(-1) })
+			} else {
+				tx.set(likeRef, { userId, createdAt: serverTimestamp() })
+				tx.update(commentRef, { likeCount: increment(1) })
+			}
+
+			const nextCount = (commentSnap.data().likeCount ?? 0) + (alreadyLiked ? -1 : 1)
+			return { liked: !alreadyLiked, likeCount: Math.max(0, nextCount) }
+		})
+	},
+
+	getCommentLikeStatus: async (
+		guideId: string,
+		commentId: string,
+		userId: string
+	): Promise<boolean> => {
+		const snap = await getDoc(
+			doc(db, 'guides', guideId, 'comments', commentId, 'commentLikes', userId)
+		)
+		return snap.exists()
+	},
+
 	where,
 	orderBy,
 	limit,
+	writeBatch,
 }

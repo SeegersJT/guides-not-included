@@ -67,7 +67,6 @@
 	--popover: oklch(0.21 0.02 248);
 	--popover-foreground: oklch(0.93 0.012 220);
 
-	/* Teal — duplicant oxygen glow */
 	--primary: oklch(0.8 0.13 190);
 	--primary-foreground: oklch(0.18 0.03 230);
 
@@ -77,7 +76,6 @@
 	--muted: oklch(0.27 0.018 248);
 	--muted-foreground: oklch(0.68 0.02 225);
 
-	/* Amber — geothermal / power */
 	--accent: oklch(0.78 0.15 64);
 	--accent-foreground: oklch(0.2 0.04 60);
 
@@ -103,7 +101,6 @@
 	--sidebar-border: oklch(0.32 0.022 248);
 	--sidebar-ring: oklch(0.8 0.13 190);
 
-	/* Effects */
 	--gradient-hero: linear-gradient(180deg,
 			oklch(0.18 0.018 248 / 0.35) 0%,
 			oklch(0.18 0.018 248 / 0.85) 70%,

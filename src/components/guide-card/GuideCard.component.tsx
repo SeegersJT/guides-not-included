@@ -1,5 +1,6 @@
 import type { GuideItem } from '@/redux/types/Guide.type'
 import { LikeButton } from '@/components/like-button/LikeButton.component'
+import Link from '@/components/link/Link.component'
 
 interface GuideCardProps {
 	guide: GuideItem
@@ -9,7 +10,7 @@ interface GuideCardProps {
 
 function GuideCard({ guide, subcategoryName, subcategoryColor }: GuideCardProps) {
 	return (
-		<div className="group overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40">
+		<Link to={`/guides/${guide.id}`} type="card">
 			<div className="relative aspect-[16/10] overflow-hidden bg-secondary">
 				{guide.coverImage && (
 					<img
@@ -42,7 +43,7 @@ function GuideCard({ guide, subcategoryName, subcategoryColor }: GuideCardProps)
 					<LikeButton guideId={guide.id} likeCount={guide.likeCount ?? 0} />
 				</div>
 			</div>
-		</div>
+		</Link>
 	)
 }
 

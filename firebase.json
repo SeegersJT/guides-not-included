@@ -11,7 +11,8 @@
 	},
 	"firestore": {
 		"database": "(default)",
-		"location": "africa-south1"
+		"location": "africa-south1",
+		"rules": "firestore.rules"
 	},
 	"auth": {
 		"providers": {

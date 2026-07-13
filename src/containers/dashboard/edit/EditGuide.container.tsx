@@ -7,8 +7,8 @@ import { requestAddGuide, requestUpdateGuide, requestGuideList } from '@/redux/a
 import { addSystemNotification } from '@/redux/actions/Notification.action'
 import type { GuideBlock, GuideEditorSubmission, GuideItem } from '@/redux/types/Guide.type'
 import GuideEditor from '@/components/dashboard/edit/EditGuide.component'
-import { base64Size, fileToCoverBase64 } from '@/utils/image'
-import { MAX_TOTAL_IMAGE_BYTES, totalImagePayloadSize } from '@/utils/guideBlocks'
+import { base64Size, fileToCoverBase64 } from '@/utils/Image'
+import { MAX_TOTAL_IMAGE_BYTES, totalImagePayloadSize } from '@/utils/GuideBlocks'
 import { requestCategoryData } from '@/redux/actions/Category.action'
 
 interface GuideEditorContainerProps {
@@ -67,7 +67,7 @@ function GuideEditorContainer({ existing }: GuideEditorContainerProps) {
 
 	const handleSelectBlockImage = async (blockId: string, file: File) => {
 		try {
-			const src = await fileToCoverBase64(file, 500, 500, 1)
+			const src = await fileToCoverBase64(file, 1000, 800, 1)
 			const projectedTotal = totalImagePayloadSize(blocks, coverImage) + base64Size(src)
 
 			if (projectedTotal > MAX_TOTAL_IMAGE_BYTES) {
@@ -85,7 +85,7 @@ function GuideEditorContainer({ existing }: GuideEditorContainerProps) {
 
 	const handleCoverSelect = async (file: File) => {
 		try {
-			const src = await fileToCoverBase64(file, 500, 500, 1)
+			const src = await fileToCoverBase64(file, 480, 400, 1)
 			const projectedTotal = totalImagePayloadSize(blocks, null) + base64Size(src)
 
 			if (projectedTotal > MAX_TOTAL_IMAGE_BYTES) {

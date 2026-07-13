@@ -22,8 +22,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { BLOCK_META, createBlock, getYoutubeId, newId } from '@/utils/guideBlocks'
 import type { GuideBlock, GuideBlockType, MentionEntry } from '@/redux/types/Guide.type'
+import { BLOCK_META, createBlock, getYoutubeId, newId } from '@/utils/GuideBlocks'
 
 const TYPE_ICONS: Record<GuideBlockType, typeof Type> = {
 	text: Type,

@@ -7,7 +7,7 @@ export class Utils {
 		return Object.fromEntries(
 			Object.entries(obj).map(([key, value]) => {
 				if (value instanceof Timestamp) {
-					return [key, Utils.formatDate(value.toDate())]
+					return [key, value.toDate()]
 				}
 				return [key, value]
 			})

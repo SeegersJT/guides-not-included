@@ -147,12 +147,17 @@ function* handleRequestUpdateGuide(action: {
 	}
 }
 
-function* handleRequestDeleteGuide(action: { type: string; payload: { id: string } }) {
+function* handleRequestDeleteGuide(action: {
+	type: string
+	payload: { id: string; onSuccess?: () => void }
+}) {
 	yield put(setGuideMutationLoading(true))
 
 	try {
 		yield call(firestoreService.remove, 'guides', action.payload.id)
 		yield put(deleteGuide(action.payload.id))
+
+		action.payload.onSuccess?.()
 	} catch (err) {
 		yield* handleSagaError(err, { title: 'Guide', context: 'REQUEST_DELETE_GUIDE' })
 	} finally {
