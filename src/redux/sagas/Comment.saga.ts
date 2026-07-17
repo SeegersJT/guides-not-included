@@ -1,5 +1,5 @@
 import { all, call, put, takeEvery } from 'redux-saga/effects'
-import { authService, firestoreService } from '@/firebase'
+import { firestoreService } from '@/firebase'
 import type { CommentInput, CommentItem } from '../types/Comment.type'
 import {
 	addComment,

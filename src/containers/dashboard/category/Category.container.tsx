@@ -99,7 +99,6 @@ function CategoryContainer() {
 		dispatch(
 			requestAddSubcategory(category.id, {
 				name: clean,
-				icon: '',
 				order: category.subcategories.length,
 			})
 		)

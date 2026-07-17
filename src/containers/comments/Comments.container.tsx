@@ -9,7 +9,6 @@ import {
 	requestDeleteComment,
 	requestCommentLikeStatuses,
 } from '@/redux/actions/Comment.action'
-import { authService } from '@/firebase'
 import Comments from '@/components/comments/Comments.component'
 
 interface CommentsContainerProps {

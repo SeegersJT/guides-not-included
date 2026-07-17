@@ -1,5 +1,5 @@
 import { call, put, takeEvery } from 'redux-saga/effects'
-import { authService, firestoreService } from '@/firebase'
+import { firestoreService } from '@/firebase'
 import type {
 	GuideEditorSubmission,
 	GuideInput,

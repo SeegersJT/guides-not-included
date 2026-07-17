@@ -14,9 +14,6 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import type { ManagedCategory } from '@/lib/category-store'
-import ColorSwatches from './color-swatches/ColorSwatches.component'
-import CategoryRow from './category-row/CategoryRow.component'
 
 interface ColorChoice {
 	label: string
